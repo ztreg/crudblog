@@ -8,7 +8,7 @@ const pug = require('pug')
 const bodyParser = require('body-parser')
 
 const Datastore = require('nedb-promises')
-const { json } = require('body-parser')
+
 let datastore = Datastore.create('blog.db')
 let db2 = Datastore.create('commentdb.db')
 
@@ -35,6 +35,24 @@ app.post('/add', async (req, res) => {
   
 })
 
+app.get('/blogs/:blogid', async (req, res) => {
+
+  try{
+    const blogresults = await datastore.find({_id : req.params.blogid})
+    const commentresults = await db2.find({blogid : req.params.blogid })
+    const results = []
+    results.push(blogresults, commentresults)
+    if(blogresults != 0) {
+      res.json({results})
+    } else {
+      throw Error("LUL FAIL")
+    }
+    
+  } catch (e) {
+    res.json({message: e.message}).status(400)
+  }
+})
+
 app.post('/addcomment/:blogid', async (req, res) => {
 
   try {
@@ -51,6 +69,7 @@ app.delete('/delete/:id', async (req, res) => {
     try {
      const result = await datastore.remove({ _id: req.params.id }, {}, function (err, numRemoved) {})
      res.json({result}).status(200)
+     // if result = 0, res.400
     } catch (e) {
       res.json({message: e}).status(400)
     }
