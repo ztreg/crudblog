@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title Document
+    body
+           include header.pug
+    div
+        h1 Här är blogginlägget
+        - for(let i = 0; i < blogresults.length; i++) {
+
+            h2 Titel: #{blogresults[i].title}
+            p Content: #{blogresults[i].content}
+
+            - for(let y = 0; y < commentresults.length; y++) {
+                p commentresults: #{commentresults[y].comment}
+            - } 
+        - }
+    <h1> Add a new comment </h1>
+    
+    form(action='/addcomment/'+blogresults[0]._id, method='POST')
+        input(type='text', name='comment', value='')
+        input(type='submit', value='Submit')
+    include footer.pug

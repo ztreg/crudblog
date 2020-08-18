@@ -3,9 +3,20 @@ html(lang="en")
     head
         meta(charset="UTF-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title Document
-        script(src='/files/test.js')
+        title frontpagexd
+        script(src='/script.js')
     body
-        h1 
-        
+       include header.pug
+       // include ../public/script.js
+    div(class="")
+        h1 Här är alla blogginlägg
+        - for(let i = 0; i < result.length; i++) {
+       
+            button(onclick="deletexd('"+result[i]._id+"')") delete
+
+        a(href='/blogs/' + result[i]._id) Se Blogpost
+            h2 Titel: #{result[i].title}
+            p Content: #{result[i].content}
+        - }
+include footer.pug
 

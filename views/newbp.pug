@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title Document
+    body
+    include header.pug
+    h1 Add a new blogpost
+    <form action="add" method="POST" id="form1">
+        <label for="title">Blogg titel</label>
+        <input type="text" id="title" name="title"><br><br>
+        <label for="content">Blogg content:</label>
+        <input type="text" id="content" name="content">
+    </form>
+
+    <button type="submit" form="form1" value="Submit">Submit Bloggpost</button>

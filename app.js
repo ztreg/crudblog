@@ -19,13 +19,23 @@ app.use(express.static('./public'))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.get('/', (req, res) => {
-    res.render('index.pug', {name: 'Jonas'})
+app.use(express.urlencoded({
+  extended: true
+}))
+
+app.get('/', async (req, res) => {
+    const result = await datastore.find({ }, function (err, docs) {});
+    console.log("antal blogposts" + result.length)
+    res.render('index.pug', {result})
+})
+
+app.get('/new', async (req,res) => {
+    res.render('newbp.pug')
 })
 
 app.post('/add', async (req, res) => {
 
-    //console.log(req.body)
+    console.log(req.body)
     try {
      const result = await datastore.insert({ title: req.body.title, content: req.body.content })
      res.json({result}).status(200)
@@ -40,24 +50,23 @@ app.get('/blogs/:blogid', async (req, res) => {
   try{
     const blogresults = await datastore.find({_id : req.params.blogid})
     const commentresults = await db2.find({blogid : req.params.blogid })
-    const results = []
-    results.push(blogresults, commentresults)
     if(blogresults != 0) {
-      res.json({results})
+      res.render('singleblog', {blogresults, commentresults})
+      // res.json({results})
     } else {
       throw Error("LUL FAIL")
     }
-    
   } catch (e) {
     res.json({message: e.message}).status(400)
   }
 })
 
 app.post('/addcomment/:blogid', async (req, res) => {
-
+  console.log("fick en kommentar")
   try {
     const result = await db2.insert({ blogid: req.params.blogid, comment: req.body.comment })
     res.json({result}).status(200)
+    res.redirect('')
   } catch (e) {
     res.json({message: e}).status(400)
   } 
@@ -65,7 +74,6 @@ app.post('/addcomment/:blogid', async (req, res) => {
 })
 
 app.delete('/delete/:id', async (req, res) => {
-
     try {
      const result = await datastore.remove({ _id: req.params.id }, {}, function (err, numRemoved) {})
      res.json({result}).status(200)
@@ -73,8 +81,6 @@ app.delete('/delete/:id', async (req, res) => {
     } catch (e) {
       res.json({message: e}).status(400)
     }
-  
-    
 })
 
 app.put('/update/:id', async (req, res) => {
@@ -88,11 +94,9 @@ app.put('/update/:id', async (req, res) => {
 })
 
 //Statisk
-app.get('/pugtest', (req, res) => {
-    
+app.get('/pugtest', (req, res) => {    
     res.render('index.pug', {name: 'Jonas'})
-  })
-
+})
 
 app.get('/json', (req, res) => {
     res.json({ frukt: 'äpple'})
@@ -101,7 +105,6 @@ app.get('/json', (req, res) => {
 app.get('/file', (req, res) => {
   res.sendFile('public/files/hej.html', {root: __dirname})
 })
-
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
